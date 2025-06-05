@@ -1,5 +1,5 @@
 import { useState } from "react";
-import fetchNotes from "../../services/noteService";
+import {fetchNotes} from "../../services/noteService";
 import NoteList from "../NoteList/NoteList";
 import Pagination from "../Pagination/Pagination";
 import SearchBox from "../SearchBox/SearchBox";
@@ -10,7 +10,7 @@ import NoteModal from "../NoteModal/NoteModal";
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState(1);
-    // const [modal, setModal] = useState()
+    const [modal, setModal] = useState(false)
 
     const { data } = useQuery({
         queryKey: ['notes', currentPage],
@@ -19,6 +19,9 @@ export default function App() {
     })
 
     const totalPages = data?.totalPages ?? 0;
+
+    const openModal = () => setModal(true);
+    const closeModal = () => setModal(false);
 
     return (
         <div className={css.app}>
@@ -29,10 +32,10 @@ export default function App() {
                     currentPage={currentPage}
                     onPageChange={setCurrentPage}
                 />}
-                <button className={css.button}>Create note +</button>
+                <button className={css.button} onClick={openModal}>Create note +</button>
             </header>
             <NoteList notes={data?.notes} />
-            <NoteModal />
+            {modal && <NoteModal onClose={closeModal} />}
         </div>
     )
 }
