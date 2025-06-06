@@ -19,8 +19,8 @@ export default function App() {
     const [debouncedQuery] = useDebounce(searchQuery, 500)
 
     const { data, isError, isLoading } = useQuery({
-        queryKey: ['notes', currentPage, debouncedQuery],
-        queryFn: () => fetchNotes(currentPage, debouncedQuery),
+        queryKey: ['notes', debouncedQuery, currentPage],
+        queryFn: () => fetchNotes(debouncedQuery, currentPage),
         placeholderData: keepPreviousData,
     })
 
@@ -32,7 +32,10 @@ export default function App() {
     return (
         <div className={css.app}>
             <header className={css.toolbar}>
-                <SearchBox value={searchQuery} onSearch={setSearchQuery}/>
+                <SearchBox value={searchQuery} onSearch={(value) => {
+                    setSearchQuery(value);
+                    setCurrentPage(1);
+                }} />
                 {totalPages > 1 && <Pagination
                     totalPages={totalPages}
                     currentPage={currentPage}
@@ -42,7 +45,9 @@ export default function App() {
             </header>
             {isLoading && <Loader />}
             {isError && <ErrorMessage />}
-            <NoteList notes={data?.notes} />
+            {data?.notes
+                ? (<NoteList notes={data?.notes} />)
+                : (!isLoading && !isError && <p className={css.empty}>No notes found</p>) }
             {modal && <NoteModal onClose={closeModal} />}
         </div>
     )

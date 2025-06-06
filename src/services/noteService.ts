@@ -15,7 +15,7 @@ interface NotesHttpResponse{
     totalPages: number;
 }
 
-export async function fetchNotes(page: number, searchQuery: string): Promise<NotesHttpResponse> {
+export async function fetchNotes(searchQuery: string, page: number): Promise<NotesHttpResponse> {
     const params: {
         page: number;
         perPage: number;
@@ -37,8 +37,8 @@ export async function fetchNotes(page: number, searchQuery: string): Promise<Not
     return response.data;
 }
 
-export async function deleteNote(noteId: number) {
-    const response = await axios.delete(`${API_URL}/${noteId}`, {
+export async function deleteNote(noteId: number): Promise<Note> {
+    const response = await axios.delete<Note>(`${API_URL}/${noteId}`, {
         headers: HEADERS,
     })
     return response.data;

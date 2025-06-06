@@ -2,9 +2,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import css from './NoteList.module.css'
 import type { Note } from '../../types/note';
 import { deleteNote } from '../../services/noteService';
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
 
 interface NoteListProps{
-    notes: Note[] | undefined;
+    notes: Note[];
 }
 
 export default function NoteList({ notes }: NoteListProps) {
@@ -15,12 +17,21 @@ export default function NoteList({ notes }: NoteListProps) {
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['notes']})
         },
-        onError: () => {},
+        onError: () => {
+            iziToast.error({
+                title: 'Error',
+                message: 'Failed to delete note. Please try again.',
+                position: 'topRight',
+                messageColor: '#ffffff',
+                messageSize: '16px',
+                backgroundColor: '#ef4040',
+            })
+        },
     })
 
     return (
         <ul className={css.list}>
-            {notes?.map(note => {
+            {notes.map(note => {
                 return (
                     <li key={note.id} className={css.listItem}>
                         <h2 className={css.title}>{note.title}</h2>
