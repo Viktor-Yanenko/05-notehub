@@ -15,7 +15,7 @@ export default function App() {
     const [currentPage, setCurrentPage] = useState(1);
     const [modal, setModal] = useState(false);
 
-    const [searchQuery, setSearchQuery] = useState(' ');
+    const [searchQuery, setSearchQuery] = useState('');
     const [debouncedQuery] = useDebounce(searchQuery, 500)
 
     const { data, isError, isLoading } = useQuery({

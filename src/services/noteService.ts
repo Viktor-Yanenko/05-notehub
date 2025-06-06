@@ -16,14 +16,24 @@ interface NotesHttpResponse{
 }
 
 export async function fetchNotes(page: number, searchQuery: string): Promise<NotesHttpResponse> {
+    const params: {
+        page: number;
+        perPage: number;
+        search?: string;
+    } = {
+        page,
+        perPage: 12
+    }
+
+    const trimmedQuery = searchQuery.trim();
+    if (trimmedQuery !== '') {
+        params.search = trimmedQuery;
+    }
+    
     const response = await axios.get<NotesHttpResponse>(API_URL, {
-        params: {
-            page,
-            perPage: 12,
-            search: searchQuery,
-        },
+        params,
         headers: HEADERS,
-    })
+    });
     return response.data;
 }
 
