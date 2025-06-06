@@ -6,15 +6,21 @@ import SearchBox from "../SearchBox/SearchBox";
 import css from './App.module.css'
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import NoteModal from "../NoteModal/NoteModal";
+import { useDebounce } from "use-debounce";
+import Loader from "../Loader/Loader";
+import ErrorMessage from "../ErrorMessage/ErrorMessage";
 
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState(1);
-    const [modal, setModal] = useState(false)
+    const [modal, setModal] = useState(false);
 
-    const { data } = useQuery({
-        queryKey: ['notes', currentPage],
-        queryFn: () => fetchNotes(currentPage),
+    const [searchQuery, setSearchQuery] = useState(' ');
+    const [debouncedQuery] = useDebounce(searchQuery, 500)
+
+    const { data, isError, isLoading } = useQuery({
+        queryKey: ['notes', currentPage, debouncedQuery],
+        queryFn: () => fetchNotes(currentPage, debouncedQuery),
         placeholderData: keepPreviousData,
     })
 
@@ -26,7 +32,7 @@ export default function App() {
     return (
         <div className={css.app}>
             <header className={css.toolbar}>
-                <SearchBox />
+                <SearchBox value={searchQuery} onSearch={setSearchQuery}/>
                 {totalPages > 1 && <Pagination
                     totalPages={totalPages}
                     currentPage={currentPage}
@@ -34,6 +40,8 @@ export default function App() {
                 />}
                 <button className={css.button} onClick={openModal}>Create note +</button>
             </header>
+            {isLoading && <Loader />}
+            {isError && <ErrorMessage />}
             <NoteList notes={data?.notes} />
             {modal && <NoteModal onClose={closeModal} />}
         </div>

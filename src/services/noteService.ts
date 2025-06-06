@@ -15,11 +15,12 @@ interface NotesHttpResponse{
     totalPages: number;
 }
 
-export async function fetchNotes(page: number): Promise<NotesHttpResponse> {
+export async function fetchNotes(page: number, searchQuery: string): Promise<NotesHttpResponse> {
     const response = await axios.get<NotesHttpResponse>(API_URL, {
         params: {
             page,
             perPage: 12,
+            search: searchQuery,
         },
         headers: HEADERS,
     })
